@@ -408,7 +408,8 @@ int process_command_list(struct whisper_context * ctx, audio_async &audio, const
                     if (params.fname_out.length() > 0) {
                       fprintf(stdout, "\n");
                       fprintf(stdout, "Writing command to %s", params.fname_out.c_str());
-                      fout << command;
+                      std::string output = command + " | " + std::to_string(prob);
+                      fout << output;
                       fout << std::endl;
                     }
 
