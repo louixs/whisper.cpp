@@ -336,6 +336,15 @@ int process_command_list(struct whisper_context * ctx, audio_async &audio, const
 
     bool is_running  = true;
 
+    std::ofstream fout;
+    if (params.fname_out.length() > 0) {
+      fout.open(params.fname_out);
+      if (!fout.is_open()) {
+        fprintf(stderr, "%s: failed to open output file '%s'!\n", __func__, params.fname_out.c_str());
+        return 1;
+      }
+    }
+
     std::vector<float> pcmf32_cur;
     std::vector<float> pcmf32_prompt;
 
@@ -447,6 +456,17 @@ int process_command_list(struct whisper_context * ctx, audio_async &audio, const
 
                     const float prob = probs_id[0].first;
                     const int index = probs_id[0].second;
+
+                    const std::string command = allowed_commands[index];
+
+                    fprintf(stdout, "Fname out %s", params.fname_out.c_str());
+                    if (params.fname_out.length() > 0) {
+                      fprintf(stdout, "\n");
+                      fprintf(stdout, "Writing command to %s", params.fname_out.c_str());
+                      std::string output = command + " | " + std::to_string(prob);
+                      fout << output;
+                      fout << std::endl;
+                    }
 
                     fprintf(stdout, "\n");
                     fprintf(stdout, "%s: detected command: %s%s%s | p = %f | t = %d ms\n", __func__,
